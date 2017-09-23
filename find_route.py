@@ -1,14 +1,19 @@
 import os
 import sys
 import json
+from os.path import join, dirname
+from dotenv import load_dotenv
 from collections import defaultdict
 from pymongo import MongoClient
 import datetime
 import math
 
-client = MongoClient("mongodb://localhost/HackRice")
+dotenv_path = join(dirname(__file__), '.env')
 
-db = client["HackRice"]
+load_dotenv(dotenv_path)
+client = MongoClient(os.environ.get("MONGO_URI"))
+
+db = client["hackrice"]
 routes = db["locations"]
 
 def insertData(data):
