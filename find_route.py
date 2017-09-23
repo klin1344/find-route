@@ -2,9 +2,24 @@ import os
 import sys
 import json
 from collections import defaultdict
+from pymongo import MongoClient
 import datetime
 import math
 
+client = MongoClient("mongodb://localhost/HackRice")
+
+db = client["HackRice"]
+routes = db["locations"]
+
+def insertData(data):
+    bulkInsertData = map(lambda info: {
+        "lat": info[0],
+        "lon": info[1],
+        "timestamp": info[2],
+        "frequency": data[info]
+    }, data.keys())
+
+    return routes.insert_many(bulkInsertData)
 
 def max_freq(counts):
     max_count = 0
@@ -26,14 +41,17 @@ def clean_locs(loc_json):
             clean_locs.append(loc)
     return clean_locs
 
-
 def get_route(loc_json):
     route = []
     counts = defaultdict(int)
     cleaned = clean_locs(loc_json)
     for loc_point in cleaned:
-        counts[tuple(map(lambda x: round(x / 10000000.0, 2),
-                         [loc_point["latitudeE7"], loc_point["longitudeE7"]]))] += 1
+        key = map(lambda x: round(x / 10000000.0, 2), [loc_point["latitudeE7"], loc_point["longitudeE7"]])
+        key.append(round(float(loc_point["timestampMs"]), -8))
+        counts[tuple(key)] += 1
+
+    insertData(counts)
+
     max_coord = max_freq(counts)
     route.append(max_coord)
     counts.pop(max_coord)
@@ -44,6 +62,7 @@ with open(os.path.dirname(os.path.realpath(__file__)) + '/location.json') as dat
     loc_json = json.load(data_file)
 
 sys.stdout.write(str(get_route(loc_json)))
+
 # def match_routes(user_1, user_2):
 #     route_1 = get_route(user_1[1])
 #     route_2 = get_route(user_2[1])
