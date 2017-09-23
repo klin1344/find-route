@@ -1,3 +1,5 @@
+import os
+import sys
 import json
 from collections import defaultdict
 import datetime
@@ -38,10 +40,10 @@ def get_route(loc_json):
     route.append(max_freq(counts))
     return route
 
-with open('location.json') as data_file:
+with open(os.path.dirname(os.path.realpath(__file__)) + '/location.json') as data_file:
     loc_json = json.load(data_file)
 
-print get_route(loc_json)
+sys.stdout.write(str(get_route(loc_json)))
 # def match_routes(user_1, user_2):
 #     route_1 = get_route(user_1[1])
 #     route_2 = get_route(user_2[1])
