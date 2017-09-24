@@ -25,7 +25,6 @@ def insertData(data):
     bulkInsertData = map(lambda info: {
         "lat": info[0],
         "lon": info[1],
-        "timestamp": info[2],
         "frequency": data[info],
         "email": email
     }, data.keys())
@@ -58,7 +57,6 @@ def get_route(loc_json):
     cleaned = clean_locs(loc_json)
     for loc_point in cleaned:
         key = map(lambda x: round(x / 10000000.0, 2), [loc_point["latitudeE7"], loc_point["longitudeE7"]])
-        key.append(round(float(loc_point["timestampMs"]), -8))
         counts[tuple(key)] += 1
 
     insertData(counts)
