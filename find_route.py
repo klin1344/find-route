@@ -16,12 +16,18 @@ client = MongoClient(os.environ.get("MONGO_URI"))
 db = client["hackrice"]
 routes = db["locations"]
 
+try:
+    email = sys.argv[1]
+except:
+    raise ValueError("You must specify an email as the third argument")
+
 def insertData(data):
     bulkInsertData = map(lambda info: {
         "lat": info[0],
         "lon": info[1],
         "timestamp": info[2],
-        "frequency": data[info]
+        "frequency": data[info],
+        "email": email
     }, data.keys())
 
     return routes.insert_many(bulkInsertData)
