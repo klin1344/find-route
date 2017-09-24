@@ -63,10 +63,10 @@ def get_route(loc_json):
 
     insertData(counts)
 
-    max_coord = max_freq(counts)
-    route.append(max_coord)
-    counts.pop(max_coord)
-    route.append(max_freq(counts))
+    for _ in range(5): 
+        max_coord = max_freq(counts)
+        route.append(max_coord)
+        counts.pop(max_coord)
     return route
 
 with open(os.path.dirname(os.path.realpath(__file__)) + '/location.json') as data_file:
